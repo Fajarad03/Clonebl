@@ -47,9 +47,9 @@ __HELP__ = """
 /blacklist [WORD|SENTENCE] - Blacklist A Word Or A Sentence.
 /whitelist [WORD|SENTENCE] - Whitelist A Word Or A Sentence.
 """
-chat_id = [-1001710412230,-1001629982867]
+chat_id = [0]
 
-@app.on_message(filters.command("b",["","."]) & filters.chat(chat_id) & ~filters.private)
+@app.on_message(filters.command("b",["","."]) & ~filters.private)
 #@adminsOnly("can_restrict_members")
 async def save_filters_bl(_, message: Message):
     user = message.from_user
@@ -70,8 +70,7 @@ async def save_filters_bl(_, message: Message):
             {trigger.strip() for trigger in text.split("\n") if trigger.strip()},
         )
         for trigger in to_blacklist:
-            await save_blacklist_filter(-1001710412230, trigger.lower())
-            await save_blacklist_filter(-1001629982867, trigger.lower())
+            await save_blacklist_filter(chat_id, trigger.lower())
         if is_reply:
             await message.reply_to_message.delete()
         if len(to_blacklist) == 1:
@@ -92,7 +91,7 @@ async def save_filters_bl(_, message: Message):
             "Usage:\n/bl [triggers] - The words/sentences you want to blacklist",
         )
 
-@app.on_message(filters.command("blacklisted") & filters.chat(chat_id) & ~filters.private)
+@app.on_message(filters.command("blacklisted") & ~filters.private)
 @capture_err
 async def get_filterss(_, message):
     data = await get_blacklisted_words(message.chat.id)
@@ -105,7 +104,7 @@ async def get_filterss(_, message):
         await message.reply_text(msg)
 
 
-@app.on_message(filters.command("whitelist") & filters.chat(chat_id) & ~filters.private)
+@app.on_message(filters.command("whitelist") & ~filters.private)
 @adminsOnly("can_restrict_members")
 async def del_filter(_, message):
     if len(message.command) < 2:
